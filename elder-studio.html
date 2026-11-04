@@ -3,15 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Heirloom Audio - Studio</title>
+    <title>Heirloom Audio - Dashboard</title>
     <style>
         :root {
             --bg-color: #121212;
             --text-color: #ffffff;
             --btn-green: #2ecc71;
             --btn-red: #e74c3c;
-            --btn-gray: #333333;
+            --btn-gray: #222222;
             --btn-blue: #3498db;
+            --btn-purple: #9b59b6;
+            --btn-orange: #e67e22;
+            --btn-yellow: #f1c40f;
         }
 
         * {
@@ -34,14 +37,13 @@
             text-align: center;
         }
 
-        /* Screen Views */
         .view {
             display: none;
             width: 100%;
             max-width: 600px;
             flex-direction: column;
             align-items: center;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
         .active-view {
@@ -49,43 +51,75 @@
         }
 
         .prompt-container {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            width: 100%;
         }
 
         .greeting {
             font-size: 1.1rem;
             color: #aaaaaa;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .question {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: bold;
             line-height: 1.3;
         }
 
-        /* Tremor-Proof Record Button */
+        /* Dashboard Grid Layout */
+        .dashboard-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            max-width: 450px;
+            margin-top: 10px;
+        }
+
+        .dash-btn {
+            padding: 18px;
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+            transition: transform 0.1s ease;
+        }
+
+        .dash-btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-audio { background-color: var(--btn-green); }
+        .btn-photo { background-color: var(--btn-orange); }
+        .btn-video { background-color: var(--btn-purple); }
+        .btn-ideas { background-color: var(--btn-yellow); color: #000; }
+        .btn-archive { background-color: var(--btn-blue); }
+
+        /* Recorder Studio Styles */
         .record-btn {
-            width: 220px;
-            height: 220px;
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
             border: none;
             background-color: var(--btn-green);
             color: white;
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            transition: background-color 0.3s ease, transform 0.1s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            margin: 0 auto;
-        }
-
-        .record-btn:active {
-            transform: scale(0.95);
+            margin: 20px auto;
         }
 
         .recording {
@@ -100,17 +134,16 @@
         }
 
         .status-text {
-            margin-top: 20px;
+            margin-top: 15px;
             font-size: 1.1rem;
             height: 24px;
             color: #aaaaaa;
         }
 
-        /* Navigation & Action Buttons */
-        .nav-btn {
+        .back-btn {
             margin-top: 25px;
-            padding: 15px 25px;
-            background-color: var(--btn-gray);
+            padding: 15px;
+            background-color: #444;
             color: white;
             border: none;
             border-radius: 12px;
@@ -121,18 +154,54 @@
             max-width: 300px;
         }
 
-        .nav-btn-blue {
-            background-color: var(--btn-blue);
+        /* Ideas / Prompt List Styling */
+        .ideas-list {
+            width: 100%;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .idea-card {
+            background-color: #1e1e1e;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            text-align: left;
+        }
+
+        .idea-text {
+            font-size: 1.05rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .answer-idea-btn {
+            padding: 10px;
+            background-color: var(--btn-green);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            align-self: flex-start;
         }
 
         /* Archive Gallery Styling */
         .archive-list {
             width: 100%;
-            margin-top: 20px;
+            margin-top: 15px;
             display: flex;
             flex-direction: column;
             gap: 15px;
-            max-height: 60vh;
+            max-height: 55vh;
             overflow-y: auto;
             padding-right: 5px;
         }
@@ -149,181 +218,327 @@
         }
 
         .archive-card-header {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #888;
         }
 
         .archive-card-title {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: bold;
         }
 
-        .archive-card audio {
+        .archive-card audio, .archive-card video, .archive-card img {
             width: 100%;
+            max-height: 250px;
+            object-fit: contain;
+            border-radius: 8px;
             margin-top: 5px;
+            background: #000;
         }
 
         .empty-archive {
             color: #777;
             margin-top: 40px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
+        }
+
+        #fileInput {
+            display: none;
         }
     </style>
 </head>
 <body>
 
-    <!-- ================= VIEW 1: THE STUDIO (RECORDER) ================= -->
-    <div id="studioView" class="view active-view">
+    <!-- ================= VIEW 1: THE MAIN DASHBOARD ================= -->
+    <div id="dashboardView" class="view active-view">
         <div class="prompt-container">
-            <div class="greeting" id="greetingLabel">Sunday's Question:</div>
-            <div class="question" id="promptText">What is your favorite memory of your grandfather?</div>
+            <div class="greeting">Sunday's Question:</div>
+            <div class="question" id="mainPromptText">What is your favorite memory of your grandfather?</div>
         </div>
+
+        <div class="dashboard-grid">
+            <button class="dash-btn btn-audio" id="goAudioBtn">🎙️ Record Voice Story</button>
+            <button class="dash-btn btn-ideas" id="goIdeasBtn">💡 Memory Ideas & Questions</button>
+            <button class="dash-btn btn-photo" id="goPhotoBtn">📸 Take / Upload Photo</button>
+            <button class="dash-btn btn-video" id="goVideoBtn">🎥 Record Video Message</button>
+            <button class="dash-btn btn-archive" id="goArchiveBtn">📂 View My Story Archive</button>
+        </div>
+    </div>
+
+    <!-- ================= VIEW 2: AUDIO RECORDER STUDIO ================= -->
+    <div id="audioView" class="view">
+        <h2 style="margin-bottom: 5px;">Voice Memory Studio</h2>
+        <p style="color: #aaa; font-size: 0.95rem; margin-bottom: 10px;" id="audioPromptDisplay">Answering Question</p>
 
         <button class="record-btn" id="recordBtn">
             Start<br>Recording
         </button>
 
         <div class="status-text" id="statusText">Ready when you are.</div>
-
-        <button class="nav-btn" id="spontaneousBtn">Record a Spontaneous Memory</button>
-        <button class="nav-btn nav-btn-blue" id="openArchiveBtn">View My Recorded Stories</button>
+        <button class="back-btn" id="backFromAudioBtn">Back to Dashboard</button>
     </div>
 
-    <!-- ================= VIEW 2: THE ARCHIVE (GALLERY) ================= -->
-    <div id="archiveView" class="view">
-        <h2 style="margin-bottom: 10px;">Your Recorded Memories</h2>
-        <p style="color: #aaa; font-size: 0.95rem; margin-bottom: 20px;">Listen back to everything saved on this device.</p>
+    <!-- ================= VIEW 3: VIDEO RECORDER STUDIO ================= -->
+    <div id="videoView" class="view">
+        <h2 style="margin-bottom: 5px;">Video Memory Studio</h2>
+        <p style="color: #aaa; font-size: 0.95rem; margin-bottom: 10px;">Record a short video message</p>
+
+        <video id="videoPreview" autoplay playsinline muted style="width: 100%; max-width: 400px; height: 250px; background: #000; border-radius: 12px; margin-bottom: 15px;"></video>
+
+        <button class="dash-btn btn-video" id="recordVideoBtn" style="width: 100%; max-width: 300px;">Start Video Recording</button>
+        <div class="status-text" id="videoStatusText">Camera ready.</div>
+        <button class="back-btn" id="backFromVideoBtn">Back to Dashboard</button>
+    </div>
+
+    <!-- ================= VIEW 4: MEMORY IDEAS / QUESTIONS LIBRARY ================= -->
+    <div id="ideasView" class="view">
+        <h2 style="margin-bottom: 5px;">Memory Ideas & Questions</h2>
+        <p style="color: #aaa; font-size: 0.95rem; margin-bottom: 15px;">Tap any question below to answer it instantly.</p>
         
-        <div class="archive-list" id="archiveList">
-            <!-- Dynamically injected recorded items appear here -->
+        <div class="ideas-list" id="ideasList">
+            <!-- Populated dynamically via script -->
         </div>
 
-        <button class="nav-btn nav-btn-blue" id="backToStudioBtn" style="margin-top: 30px;">Back to Recorder</button>
+        <button class="back-btn" id="backFromIdeasBtn">Back to Dashboard</button>
     </div>
 
+    <!-- ================= VIEW 5: ARCHIVE GALLERY ================= -->
+    <div id="archiveView" class="view">
+        <h2 style="margin-bottom: 5px;">Your Family Vault Archive</h2>
+        <p style="color: #aaa; font-size: 0.95rem; margin-bottom: 15px;">All saved stories, photos, and videos.</p>
+        
+        <div class="archive-list" id="archiveList">
+            <!-- Dynamic items injected here -->
+        </div>
+
+        <button class="back-btn" id="backFromArchiveBtn">Back to Dashboard</button>
+    </div>
+
+    <input type="file" id="fileInput" accept="image/*" capture="environment">
+
     <script>
+        let localArchive = [];
         let mediaRecorder;
         let audioChunks = [];
         let isRecording = false;
-        let localRecordings = []; // Temporary local array for prototype playback
 
-        const studioView = document.getElementById('studioView');
+        let videoMediaRecorder;
+        let videoChunks = [];
+        let videoStream;
+        let isRecordingVideo = false;
+
+        // Curated List of Memory Prompts
+        const promptSuggestions = [
+            "What can you remember about your very first day at school?",
+            "What was your first ever job, and how much did you get paid?",
+            "Do you remember any major historical events or what life was like during wartime?",
+            "What is the funniest mischief you ever got into when you were a child?",
+            "Who was your best friend growing up, and what did you used to do together?",
+            "What was your family home like when you were a little boy or girl?",
+            "What is the best piece of advice your mother or grandad ever gave you?",
+            "How did you meet your spouse or partner for the very first time?"
+        ];
+
+        // View Elements
+        const dashboardView = document.getElementById('dashboardView');
+        const audioView = document.getElementById('audioView');
+        const videoView = document.getElementById('videoView');
+        const ideasView = document.getElementById('ideasView');
         const archiveView = document.getElementById('archiveView');
-        const recordBtn = document.getElementById('recordBtn');
-        const statusText = document.getElementById('statusText');
-        const promptText = document.getElementById('promptText');
-        const greetingLabel = document.getElementById('greetingLabel');
-        const spontaneousBtn = document.getElementById('spontaneousBtn');
-        const openArchiveBtn = document.getElementById('openArchiveBtn');
-        const backToStudioBtn = document.getElementById('backToStudioBtn');
-        const archiveList = document.getElementById('archiveList');
 
-        // Toggle Views
-        openArchiveBtn.addEventListener('click', () => {
-            studioView.classList.remove('active-view');
-            archiveView.classList.add('active-view');
+        // Navigation Buttons
+        document.getElementById('goAudioBtn').addEventListener('click', () => switchView(audioView));
+        document.getElementById('goIdeasBtn').addEventListener('click', () => {
+            switchView(ideasView);
+            renderIdeas();
+        });
+        document.getElementById('goPhotoBtn').addEventListener('click', () => document.getElementById('fileInput').click());
+        document.getElementById('goVideoBtn').addEventListener('click', () => {
+            switchView(videoView);
+            startCameraPreview();
+        });
+        document.getElementById('goArchiveBtn').addEventListener('click', () => {
+            switchView(archiveView);
             renderArchive();
         });
 
-        backToStudioBtn.addEventListener('click', () => {
+        document.getElementById('backFromAudioBtn').addEventListener('click', () => switchView(dashboardView));
+        document.getElementById('backFromVideoBtn').addEventListener('click', () => {
+            stopCameraPreview();
+            switchView(dashboardView);
+        });
+        document.getElementById('backFromIdeasBtn').addEventListener('click', () => switchView(dashboardView));
+        document.getElementById('backFromArchiveBtn').addEventListener('click', () => switchView(dashboardView));
+
+        function switchView(targetView) {
+            dashboardView.classList.remove('active-view');
+            audioView.classList.remove('active-view');
+            videoView.classList.remove('active-view');
+            ideasView.classList.remove('active-view');
             archiveView.classList.remove('active-view');
-            studioView.classList.add('active-view');
-        });
+            targetView.classList.add('active-view');
+        }
 
-        // Spontaneous Memory Mode
-        spontaneousBtn.addEventListener('click', () => {
-            promptText.innerText = "I remembered something I wanted to share...";
-            greetingLabel.innerText = "Spontaneous Memory";
-            spontaneousBtn.style.display = "none";
-        });
+        // --- RENDER IDEAS LIST ---
+        function renderIdeas() {
+            const ideasList = document.getElementById('ideasList');
+            ideasList.innerHTML = "";
 
-        // Tremor-proof tap-to-toggle record button
+            promptSuggestions.forEach(question => {
+                const card = document.createElement('div');
+                card.className = 'idea-card';
+                card.innerHTML = `
+                    <div class="idea-text">"${question}"</div>
+                    <button class="answer-idea-btn">Answer This Question</button>
+                `;
+                
+                card.querySelector('.answer-idea-btn').addEventListener('click', () => {
+                    document.getElementById('mainPromptText').innerText = question;
+                    document.getElementById('audioPromptDisplay').innerText = "Answering: " + question;
+                    switchView(audioView);
+                });
+
+                ideasList.appendChild(card);
+            });
+        }
+
+        // --- AUDIO RECORDER LOGIC ---
+        const recordBtn = document.getElementById('recordBtn');
+        const statusText = document.getElementById('statusText');
+
         recordBtn.addEventListener('click', async () => {
             if (!isRecording) {
-                await startRecording();
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                        localArchive.unshift({
+                            type: 'audio',
+                            title: document.getElementById('mainPromptText').innerText,
+                            date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+                            url: URL.createObjectURL(blob)
+                        });
+                        statusText.innerText = "Saved to Family Vault!";
+                        recordBtn.style.backgroundColor = "var(--btn-green)";
+                        recordBtn.innerHTML = "Start<br>Recording";
+                    };
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    recordBtn.classList.add('recording');
+                    recordBtn.innerHTML = "Stop<br>Recording";
+                    statusText.innerText = "Listening... Tap to finish.";
+                } catch (err) {
+                    statusText.innerText = "Microphone access denied.";
+                }
             } else {
-                stopRecording();
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(t => t.stop());
+                isRecording = false;
+                recordBtn.classList.remove('recording');
+                recordBtn.style.backgroundColor = "#555";
+                recordBtn.innerHTML = "Saving...";
             }
         });
 
-        async function startRecording() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
+        // --- PHOTO CAPTURE / UPLOAD LOGIC ---
+        const fileInput = document.getElementById('fileInput');
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const photoUrl = URL.createObjectURL(file);
+                localArchive.unshift({
+                    type: 'photo',
+                    title: "Heirloom Photograph / Memory Image",
+                    date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+                    url: photoUrl
+                });
+                alert("Photo saved successfully to your Family Vault!");
+            }
+        });
 
-                mediaRecorder.ondataavailable = event => {
-                    if (event.data.size > 0) {
-                        audioChunks.push(event.data);
-                    }
+        // --- VIDEO RECORDER LOGIC ---
+        const videoPreview = document.getElementById('videoPreview');
+        const recordVideoBtn = document.getElementById('recordVideoBtn');
+        const videoStatusText = document.getElementById('videoStatusText');
+
+        async function startCameraPreview() {
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                videoPreview.srcObject = videoStream;
+            } catch (err) {
+                videoStatusText.innerText = "Camera access denied.";
+            }
+        }
+
+        function stopCameraPreview() {
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+            }
+        }
+
+        recordVideoBtn.addEventListener('click', () => {
+            if (!isRecordingVideo) {
+                videoChunks = [];
+                videoMediaRecorder = new MediaRecorder(videoStream);
+                videoMediaRecorder.ondataavailable = e => { if (e.data.size > 0) videoChunks.push(e.data); };
+                videoMediaRecorder.onstop = () => {
+                    const blob = new Blob(videoChunks, { type: 'video/webm' });
+                    localArchive.unshift({
+                        type: 'video',
+                        title: "Video Message",
+                        date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+                        url: URL.createObjectURL(blob)
+                    });
+                    videoStatusText.innerText = "Video saved to vault!";
+                    recordVideoBtn.style.backgroundColor = "var(--btn-purple)";
+                    recordVideoBtn.innerText = "Start Video Recording";
                 };
 
-                mediaRecorder.onstop = handleAudioSave;
-                mediaRecorder.start();
-                isRecording = true;
-
-                recordBtn.classList.add('recording');
-                recordBtn.innerHTML = "Stop<br>Recording";
-                statusText.innerText = "Listening... (Tap when finished)";
-
-            } catch (err) {
-                statusText.innerText = "Please allow microphone access.";
-                console.error("Mic error:", err);
+                videoMediaRecorder.start();
+                isRecordingVideo = true;
+                recordVideoBtn.style.backgroundColor = "var(--btn-red)";
+                recordVideoBtn.innerText = "Stop Recording";
+                videoStatusText.innerText = "Recording video message...";
+            } else {
+                videoMediaRecorder.stop();
+                isRecordingVideo = false;
+                recordVideoBtn.style.backgroundColor = "#555";
+                recordVideoBtn.innerText = "Saving video...";
             }
-        }
+        });
 
-        function stopRecording() {
-            if (mediaRecorder && mediaRecorder.state !== "inactive") {
-                mediaRecorder.stop();
-                mediaRecorder.stream.getTracks().forEach(track => track.stop());
-            }
-            
-            isRecording = false;
-            recordBtn.classList.remove('recording');
-            recordBtn.style.backgroundColor = "#555";
-            recordBtn.innerHTML = "Saving...";
-            statusText.innerText = "Securing your memory...";
-        }
-
-        function handleAudioSave() {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-            const audioUrl = URL.createObjectURL(audioBlob);
-            
-            // Save to our local array with timestamp and current question title
-            const memoryItem = {
-                title: promptText.innerText,
-                date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
-                url: audioUrl
-            };
-            localRecordings.unshift(memoryItem); // Add to top of list
-
-            setTimeout(() => {
-                recordBtn.style.backgroundColor = "var(--btn-green)";
-                recordBtn.innerHTML = "Saved!<br>Thank You";
-                statusText.innerText = "Saved to Family Vault successfully.";
-                
-                setTimeout(() => {
-                    recordBtn.innerHTML = "Start<br>Recording";
-                    statusText.innerText = "Ready when you are.";
-                }, 3000);
-            }, 1500);
-        }
-
+        // --- ARCHIVE RENDER LOGIC ---
         function renderArchive() {
+            const archiveList = document.getElementById('archiveList');
             archiveList.innerHTML = "";
-            
-            if (localRecordings.length === 0) {
-                archiveList.innerHTML = `<div class="empty-archive">No recordings saved yet. Head back and record your first story!</div>`;
+
+            if (localArchive.length === 0) {
+                archiveList.innerHTML = `<div class="empty-archive">No stories or media saved yet. Use the dashboard buttons to record your first memory!</div>`;
                 return;
             }
 
-            localRecordings.forEach((rec, index) => {
+            localArchive.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'archive-card';
+                
+                let mediaElement = '';
+                if (item.type === 'audio') {
+                    mediaElement = `<audio controls src="${item.url}"></audio>`;
+                } else if (item.type === 'photo') {
+                    mediaElement = `<img src="${item.url}" alt="Family Heirloom">`;
+                } else if (item.type === 'video') {
+                    mediaElement = `<video controls src="${item.url}"></video>`;
+                }
+
                 card.innerHTML = `
-                    <div class="archive-card-header">Saved on ${rec.date}</div>
-                    <div class="archive-card-title">"${rec.title}"</div>
-                    <audio controls src="${rec.url}"></audio>
+                    <div class="archive-card-header">Saved on ${item.date}</div>
+                    <div class="archive-card-title">"${item.title}"</div>
+                    ${mediaElement}
                 `;
                 archiveList.appendChild(card);
             });

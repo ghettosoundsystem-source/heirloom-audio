@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Heirloom Audio - Studio</title>
     <style>
-        /* CSS: Clean, High-Contrast, Zero-Waste Styling */
         :root {
             --bg-color: #121212;
             --text-color: #ffffff;
             --btn-green: #2ecc71;
             --btn-red: #e74c3c;
             --btn-gray: #333333;
+            --btn-blue: #3498db;
         }
 
         * {
@@ -19,7 +19,6 @@
             margin: 0;
             padding: 0;
             font-family: system-ui, -apple-system, sans-serif;
-            /* Prevents accidental double-tap zooming */
             touch-action: manipulation; 
         }
 
@@ -29,38 +28,51 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             min-height: 100vh;
             padding: 20px;
             text-align: center;
         }
 
-        .prompt-container {
-            margin-bottom: 40px;
+        /* Screen Views */
+        .view {
+            display: none;
+            width: 100%;
             max-width: 600px;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .active-view {
+            display: flex;
+        }
+
+        .prompt-container {
+            margin-bottom: 30px;
         }
 
         .greeting {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #aaaaaa;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .question {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: bold;
             line-height: 1.3;
         }
 
-        /* Tremor-Proof Button Design */
+        /* Tremor-Proof Record Button */
         .record-btn {
-            width: 250px;
-            height: 250px;
+            width: 220px;
+            height: 220px;
             border-radius: 50%;
             border: none;
             background-color: var(--btn-green);
             color: white;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
@@ -69,13 +81,13 @@
             align-items: center;
             justify-content: center;
             flex-direction: column;
+            margin: 0 auto;
         }
 
         .record-btn:active {
             transform: scale(0.95);
         }
 
-        /* Recording State pulsing animation */
         .recording {
             background-color: var(--btn-red) !important;
             animation: pulse 1.5s infinite;
@@ -83,59 +95,149 @@
 
         @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
-            70% { box-shadow: 0 0 0 30px rgba(231, 76, 60, 0); }
+            70% { box-shadow: 0 0 0 25px rgba(231, 76, 60, 0); }
             100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
         }
 
         .status-text {
-            margin-top: 30px;
-            font-size: 1.2rem;
-            height: 24px; /* fixed height prevents layout jumping */
+            margin-top: 20px;
+            font-size: 1.1rem;
+            height: 24px;
             color: #aaaaaa;
         }
 
-        .spontaneous-btn {
-            margin-top: 40px;
-            padding: 15px 30px;
+        /* Navigation & Action Buttons */
+        .nav-btn {
+            margin-top: 25px;
+            padding: 15px 25px;
             background-color: var(--btn-gray);
             color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 1.2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
             cursor: pointer;
+            width: 100%;
+            max-width: 300px;
         }
 
+        .nav-btn-blue {
+            background-color: var(--btn-blue);
+        }
+
+        /* Archive Gallery Styling */
+        .archive-list {
+            width: 100%;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .archive-card {
+            background-color: #1e1e1e;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            text-align: left;
+        }
+
+        .archive-card-header {
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .archive-card-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .archive-card audio {
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .empty-archive {
+            color: #777;
+            margin-top: 40px;
+            font-size: 1.2rem;
+        }
     </style>
 </head>
 <body>
 
-    <div class="prompt-container" id="promptContainer">
-        <div class="greeting">Sunday's Question:</div>
-        <div class="question" id="promptText">What is your favorite memory of your grandfather?</div>
+    <!-- ================= VIEW 1: THE STUDIO (RECORDER) ================= -->
+    <div id="studioView" class="view active-view">
+        <div class="prompt-container">
+            <div class="greeting" id="greetingLabel">Sunday's Question:</div>
+            <div class="question" id="promptText">What is your favorite memory of your grandfather?</div>
+        </div>
+
+        <button class="record-btn" id="recordBtn">
+            Start<br>Recording
+        </button>
+
+        <div class="status-text" id="statusText">Ready when you are.</div>
+
+        <button class="nav-btn" id="spontaneousBtn">Record a Spontaneous Memory</button>
+        <button class="nav-btn nav-btn-blue" id="openArchiveBtn">View My Recorded Stories</button>
     </div>
 
-    <!-- The Massive Tremor-Proof Toggle Button -->
-    <button class="record-btn" id="recordBtn">
-        Start<br>Recording
-    </button>
+    <!-- ================= VIEW 2: THE ARCHIVE (GALLERY) ================= -->
+    <div id="archiveView" class="view">
+        <h2 style="margin-bottom: 10px;">Your Recorded Memories</h2>
+        <p style="color: #aaa; font-size: 0.95rem; margin-bottom: 20px;">Listen back to everything saved on this device.</p>
+        
+        <div class="archive-list" id="archiveList">
+            <!-- Dynamically injected recorded items appear here -->
+        </div>
 
-    <div class="status-text" id="statusText">Ready when you are.</div>
-
-    <!-- Freestyle Recording Option -->
-    <button class="spontaneous-btn" id="spontaneousBtn">Record a Spontaneous Memory</button>
+        <button class="nav-btn nav-btn-blue" id="backToStudioBtn" style="margin-top: 30px;">Back to Recorder</button>
+    </div>
 
     <script>
-        // JavaScript: The Logic Engine
         let mediaRecorder;
         let audioChunks = [];
         let isRecording = false;
+        let localRecordings = []; // Temporary local array for prototype playback
 
+        const studioView = document.getElementById('studioView');
+        const archiveView = document.getElementById('archiveView');
         const recordBtn = document.getElementById('recordBtn');
         const statusText = document.getElementById('statusText');
         const promptText = document.getElementById('promptText');
+        const greetingLabel = document.getElementById('greetingLabel');
         const spontaneousBtn = document.getElementById('spontaneousBtn');
+        const openArchiveBtn = document.getElementById('openArchiveBtn');
+        const backToStudioBtn = document.getElementById('backToStudioBtn');
+        const archiveList = document.getElementById('archiveList');
 
-        // Tremor-proof click handler: Only fires once per distinct tap
+        // Toggle Views
+        openArchiveBtn.addEventListener('click', () => {
+            studioView.classList.remove('active-view');
+            archiveView.classList.add('active-view');
+            renderArchive();
+        });
+
+        backToStudioBtn.addEventListener('click', () => {
+            archiveView.classList.remove('active-view');
+            studioView.classList.add('active-view');
+        });
+
+        // Spontaneous Memory Mode
+        spontaneousBtn.addEventListener('click', () => {
+            promptText.innerText = "I remembered something I wanted to share...";
+            greetingLabel.innerText = "Spontaneous Memory";
+            spontaneousBtn.style.display = "none";
+        });
+
+        // Tremor-proof tap-to-toggle record button
         recordBtn.addEventListener('click', async () => {
             if (!isRecording) {
                 await startRecording();
@@ -144,42 +246,28 @@
             }
         });
 
-        // Spontaneous Memory override
-        spontaneousBtn.addEventListener('click', () => {
-            promptText.innerText = "I remembered something I wanted to share...";
-            document.querySelector('.greeting').innerText = "Spontaneous Memory";
-            spontaneousBtn.style.display = "none"; // Hide button while in this mode
-        });
-
         async function startRecording() {
             try {
-                // Request microphone access
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                
                 mediaRecorder = new MediaRecorder(stream);
                 audioChunks = [];
 
                 mediaRecorder.ondataavailable = event => {
                     if (event.data.size > 0) {
                         audioChunks.push(event.data);
-                        // FAILSAFE LOGIC: This is where we will write the chunk to IndexedDB 
-                        // so it is saved locally to the phone memory instantly.
                     }
                 };
 
                 mediaRecorder.onstop = handleAudioSave;
-
-                // Start recording
                 mediaRecorder.start();
                 isRecording = true;
 
-                // Update UI to Red "Stop" state
                 recordBtn.classList.add('recording');
                 recordBtn.innerHTML = "Stop<br>Recording";
                 statusText.innerText = "Listening... (Tap when finished)";
 
             } catch (err) {
-                statusText.innerText = "Please allow microphone access to record.";
+                statusText.innerText = "Please allow microphone access.";
                 console.error("Mic error:", err);
             }
         }
@@ -187,42 +275,58 @@
         function stopRecording() {
             if (mediaRecorder && mediaRecorder.state !== "inactive") {
                 mediaRecorder.stop();
-                // Stop all mic tracks to free up the hardware
                 mediaRecorder.stream.getTracks().forEach(track => track.stop());
             }
             
             isRecording = false;
-
-            // Update UI back to processing state
             recordBtn.classList.remove('recording');
-            recordBtn.style.backgroundColor = "#555"; // Greyed out while saving
+            recordBtn.style.backgroundColor = "#555";
             recordBtn.innerHTML = "Saving...";
             statusText.innerText = "Securing your memory...";
         }
 
         function handleAudioSave() {
-            // Combine audio chunks into a single file (.webm format is incredibly light)
             const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            const audioUrl = URL.createObjectURL(audioBlob);
             
-            console.log("Audio securely saved locally. Size:", audioBlob.size, "bytes");
+            // Save to our local array with timestamp and current question title
+            const memoryItem = {
+                title: promptText.innerText,
+                date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+                url: audioUrl
+            };
+            localRecordings.unshift(memoryItem); // Add to top of list
 
-            // UI Feedback for the Elder
             setTimeout(() => {
-                recordBtn.style.backgroundColor = "#2ecc71"; // Back to Green
+                recordBtn.style.backgroundColor = "var(--btn-green)";
                 recordBtn.innerHTML = "Saved!<br>Thank You";
-                statusText.innerText = "Sent safely to the family vault.";
+                statusText.innerText = "Saved to Family Vault successfully.";
                 
-                // Reset UI after 3 seconds so they can record another if they want
                 setTimeout(() => {
                     recordBtn.innerHTML = "Start<br>Recording";
                     statusText.innerText = "Ready when you are.";
                 }, 3000);
-            }, 1500); // Simulated delay to show the "Saving..." state
+            }, 1500);
+        }
 
-            // Handoff to Cloud Protocol:
-            // 1. Check if navigator.onLine is true.
-            // 2. If true -> Send audioBlob to Family Google Drive via API.
-            // 3. If false -> Keep in IndexedDB and wait for 'online' event listener.
+        function renderArchive() {
+            archiveList.innerHTML = "";
+            
+            if (localRecordings.length === 0) {
+                archiveList.innerHTML = `<div class="empty-archive">No recordings saved yet. Head back and record your first story!</div>`;
+                return;
+            }
+
+            localRecordings.forEach((rec, index) => {
+                const card = document.createElement('div');
+                card.className = 'archive-card';
+                card.innerHTML = `
+                    <div class="archive-card-header">Saved on ${rec.date}</div>
+                    <div class="archive-card-title">"${rec.title}"</div>
+                    <audio controls src="${rec.url}"></audio>
+                `;
+                archiveList.appendChild(card);
+            });
         }
     </script>
 </body>

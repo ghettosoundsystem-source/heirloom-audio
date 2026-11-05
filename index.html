@@ -11,6 +11,7 @@
             --text-color: #ffffff;
             --accent-green: #2ecc71;
             --accent-blue: #3498db;
+            --border-color: #333;
         }
 
         * {
@@ -34,65 +35,122 @@
             max-width: 600px;
             width: 100%;
             text-align: center;
-            padding-top: 20px;
+            padding-top: 10px;
         }
 
         h1 {
             font-size: 2.2rem;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             color: #fff;
         }
 
         .tagline {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #aaa;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .card {
             background-color: var(--card-bg);
-            padding: 25px;
+            padding: 20px;
             border-radius: 16px;
-            border: 1px solid #333;
-            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
             text-align: left;
         }
 
         .card h3 {
             color: var(--accent-green);
-            margin-bottom: 10px;
-            font-size: 1.3rem;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
         }
 
         .card p {
             color: #ccc;
-            font-size: 1rem;
+            font-size: 0.95rem;
+        }
+
+        /* Pricing Section */
+        .pricing-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+
+        .price-card {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .price-card.featured {
+            border-color: var(--accent-green);
+            background-color: #16241a;
+        }
+
+        .badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background-color: var(--accent-green);
+            color: #000;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .price-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .price-amount {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #fff;
             margin-bottom: 10px;
         }
 
-        /* Stripe Checkout Button Styling */
+        .price-desc {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-bottom: 15px;
+        }
+
         .cta-btn {
             display: block;
             width: 100%;
-            padding: 18px;
+            padding: 15px;
             background-color: var(--accent-green);
             color: white;
             text-decoration: none;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
             border-radius: 12px;
             text-align: center;
-            box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3);
-            margin-top: 20px;
+            box-shadow: 0 6px 15px rgba(46, 204, 113, 0.3);
             transition: background 0.2s;
         }
 
+        .cta-btn.secondary {
+            background-color: #333;
+            box-shadow: none;
+        }
+
         .cta-btn:hover {
-            background-color: #27ae60;
+            opacity: 0.9;
         }
 
         .footer-note {
-            margin-top: 30px;
+            margin-top: 25px;
             font-size: 0.85rem;
             color: #666;
         }
@@ -104,27 +162,43 @@
         <h1>Heirloom Audio</h1>
         <p class="tagline">Capture the voice, stories, and history of your loved ones before they are lost to time.</p>
 
-        <!-- Value Proposition Card -->
+        <!-- Value Cards -->
         <div class="card">
-            <h3>Designed for Older Relatives</h3>
-            <p>No passwords to remember, no confusing menus, and no apps to download from an app store. Just a simple, tremor-proof dashboard with massive buttons for voice, video, photos, and nostalgic prompt ideas.</p>
+            <h3>Tremor-Proof & Zero Friction</h3>
+            <p>Designed specifically for older relatives. No passwords, no app store downloads, and massive high-contrast buttons for voice, video, and photos.</p>
         </div>
 
         <div class="card">
             <h3>Your Private Cloud Vault</h3>
-            <p>We don't hold your family's precious memories hostage on third-party servers. Audio and video files route securely straight into your own family cloud storage.</p>
+            <p>Memories route directly into your own family cloud storage. You own the files forever with zero ongoing server risks.</p>
         </div>
 
-        <div class="card">
-            <h3>The Executor Lock Failsafe</h3>
-            <p>Equipped with a secure post-mortem handover protocol, ensuring future generations inherit the complete family archive safely.</p>
+        <!-- Pricing Options -->
+        <h2 style="font-size: 1.5rem; margin-top: 30px; margin-bottom: 15px;">Choose Your Family Vault Plan</h2>
+
+        <div class="pricing-section">
+            
+            <!-- Lifetime Eternal Vault (Featured) -->
+            <div class="price-card featured">
+                <div class="badge">Best Value</div>
+                <div class="price-title">The Eternal Vault (Lifetime Access)</div>
+                <div class="price-amount">£179.99</div>
+                <div class="price-desc">One-time payment. Forever access, unlimited voice/video stories, prompt library, and the Executor Lock post-mortem security system.</div>
+                <!-- Links straight to the app studio for testing -->
+                <a href="elder-studio.html" class="cta-btn">Get Lifetime Access</a>
+            </div>
+
+            <!-- Annual Plan -->
+            <div class="price-card">
+                <div class="price-title">Annual Family Circle</div>
+                <div class="price-amount">£39.99 <span style="font-size:1rem; color:#aaa">/ year</span></div>
+                <div class="price-desc">Full studio access billed annually. Perfect for ongoing yearly memory collecting.</div>
+                <a href="elder-studio.html" class="cta-btn secondary">Choose Annual</a>
+            </div>
+
         </div>
 
-        <!-- Purchase Action -->
-        <!-- Note: We will link this button to your Stripe payment link later -->
-        <a href="elder-studio.html" class="cta-btn">Get Started (£9.99 / Month)</a>
-        
-        <p style="margin-top: 15px; font-size: 0.9rem;">
+        <p style="margin-top: 20px; font-size: 0.9rem;">
             <a href="elder-studio.html" style="color: var(--accent-blue); text-decoration: none;">Already have a vault? Open Studio App &rarr;</a>
         </p>
 

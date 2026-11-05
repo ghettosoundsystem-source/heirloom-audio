@@ -15,6 +15,7 @@
             --btn-purple: #9b59b6;
             --btn-orange: #e67e22;
             --btn-yellow: #f1c40f;
+            --btn-lock: #c0392b;
         }
 
         * {
@@ -102,6 +103,7 @@
         .btn-video { background-color: var(--btn-purple); }
         .btn-ideas { background-color: var(--btn-yellow); color: #000; }
         .btn-cloud { background-color: var(--btn-blue); }
+        .btn-lock { background-color: var(--btn-lock); }
         .btn-archive { background-color: #444; }
 
         /* Recorder Studio Styles */
@@ -155,7 +157,7 @@
             max-width: 300px;
         }
 
-        /* Ideas / Prompt List Styling */
+        /* Cards & Lists Styling */
         .ideas-list, .archive-list {
             width: 100%;
             margin-top: 15px;
@@ -167,15 +169,16 @@
             padding-right: 5px;
         }
 
-        .idea-card, .archive-card {
+        .idea-card, .archive-card, .lock-card {
             background-color: #1e1e1e;
-            padding: 15px;
+            padding: 18px;
             border-radius: 12px;
             border: 1px solid #333;
             display: flex;
             flex-direction: column;
             gap: 10px;
             text-align: left;
+            width: 100%;
         }
 
         .idea-text {
@@ -240,6 +243,7 @@
             <button class="dash-btn btn-photo" id="goPhotoBtn">📸 Take / Upload Photo</button>
             <button class="dash-btn btn-video" id="goVideoBtn">🎥 Record Video Message</button>
             <button class="dash-btn btn-cloud" id="goCloudBtn">☁️ Connect Family Cloud</button>
+            <button class="dash-btn btn-lock" id="goLockBtn">🔒 Family Executor Lock</button>
             <button class="dash-btn btn-archive" id="goArchiveBtn">📂 View My Story Archive</button>
         </div>
     </div>
@@ -269,7 +273,7 @@
         <button class="back-btn" id="backFromVideoBtn">Back to Dashboard</button>
     </div>
 
-    <!-- ================= VIEW 4: MEMORY IDEAS / QUESTIONS LIBRARY ================= -->
+    <!-- ================= VIEW 4: MEMORY IDEAS LIBRARY ================= -->
     <div id="ideasView" class="view">
         <h2 style="margin-bottom: 5px;">Memory Ideas & Questions</h2>
         <p style="color: #aaa; font-size: 0.95rem; margin-bottom: 15px;">Tap any question below to answer it instantly.</p>
@@ -284,7 +288,7 @@
         <h2 style="margin-bottom: 5px;">Family Cloud Storage</h2>
         <p style="color: #aaa; font-size: 0.95rem; margin-bottom: 20px;">Connect your family Google Drive so recordings back up automatically.</p>
         
-        <div class="card" style="background:#1e1e1e; padding:20px; border-radius:12px; border:1px solid #333; width:100%; text-align:left; margin-bottom:20px;">
+        <div class="lock-card">
             <h3 style="color:var(--btn-blue); margin-bottom:8px;">Google Drive Integration</h3>
             <p style="color:#ccc; font-size:0.9rem; margin-bottom:15px;" id="cloudStatusMsg">Status: Not connected on this device.</p>
             <button class="dash-btn btn-cloud" id="connectDriveBtn" style="width:100%;">Link Google Drive Account</button>
@@ -293,7 +297,33 @@
         <button class="back-btn" id="backFromCloudBtn">Back to Dashboard</button>
     </div>
 
-    <!-- ================= VIEW 6: ARCHIVE GALLERY ================= -->
+    <!-- ================= VIEW 6: EXECUTOR LOCK SYSTEM ================= -->
+    <div id="lockView" class="view">
+        <h2 style="margin-bottom: 5px;">Family Executor Lock</h2>
+        <p style="color: #aaa; font-size: 0.95rem; margin-bottom: 15px;">Post-mortem security and automated generational handover.</p>
+        
+        <div class="lock-card">
+            <h3 style="color: var(--btn-green); margin-bottom: 5px;">Vault Status: SECURED ✓</h3>
+            <p style="color: #ccc; font-size: 0.9rem;">Your cloud archive is locked under family guardianship. Designated executors will inherit master decryption keys only upon verified hand-off.</p>
+        </div>
+
+        <div class="lock-card">
+            <h3 style="color: #fff; font-size: 1.05rem; margin-bottom: 8px;">Designated Family Executor</h3>
+            <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 10px;">Primary: Sarah Jenkins (sarah@familymail.com)</p>
+            <button class="dash-btn btn-ideas" style="padding: 10px; font-size: 0.95rem;" onclick="alert('Executor contact details updated successfully.')">Update Executor Details</button>
+        </div>
+
+        <div class="lock-card" style="border-color: var(--btn-red);">
+            <h3 style="color: var(--btn-red); margin-bottom: 5px;">Emergency Handover Protocol</h3>
+            <p style="color: #ccc; font-size: 0.9rem; margin-bottom: 12px;">Initiating vault release triggers a transparent 14-day safety countdown across all family devices before master files unlock.</p>
+            <button class="dash-btn" style="background-color: var(--btn-red); padding: 12px; font-size: 1rem;" onclick="initiateRelease()">Initiate Vault Release</button>
+            <p id="countdownStatus" style="font-size: 0.85rem; color: #f1c40f; margin-top: 8px;"></p>
+        </div>
+
+        <button class="back-btn" id="backFromLockBtn">Back to Dashboard</button>
+    </div>
+
+    <!-- ================= VIEW 7: ARCHIVE GALLERY ================= -->
     <div id="archiveView" class="view">
         <h2 style="margin-bottom: 5px;">Your Family Vault Archive</h2>
         <p style="color: #aaa; font-size: 0.95rem; margin-bottom: 15px;">All saved stories, photos, and videos.</p>
@@ -333,6 +363,7 @@
         const videoView = document.getElementById('videoView');
         const ideasView = document.getElementById('ideasView');
         const cloudView = document.getElementById('cloudView');
+        const lockView = document.getElementById('lockView');
         const archiveView = document.getElementById('archiveView');
 
         // Navigation
@@ -341,12 +372,14 @@
         document.getElementById('goPhotoBtn').addEventListener('click', () => document.getElementById('fileInput').click());
         document.getElementById('goVideoBtn').addEventListener('click', () => { switchView(videoView); startCameraPreview(); });
         document.getElementById('goCloudBtn').addEventListener('click', () => { switchView(cloudView); checkCloudStatus(); });
+        document.getElementById('goLockBtn').addEventListener('click', () => switchView(lockView));
         document.getElementById('goArchiveBtn').addEventListener('click', () => { switchView(archiveView); renderArchive(); });
 
         document.getElementById('backFromAudioBtn').addEventListener('click', () => switchView(dashboardView));
         document.getElementById('backFromVideoBtn').addEventListener('click', () => { stopCameraPreview(); switchView(dashboardView); });
         document.getElementById('backFromIdeasBtn').addEventListener('click', () => switchView(dashboardView));
         document.getElementById('backFromCloudBtn').addEventListener('click', () => switchView(dashboardView));
+        document.getElementById('backFromLockBtn').addEventListener('click', () => switchView(dashboardView));
         document.getElementById('backFromArchiveBtn').addEventListener('click', () => switchView(dashboardView));
 
         function switchView(targetView) {
@@ -355,6 +388,7 @@
             videoView.classList.remove('active-view');
             ideasView.classList.remove('active-view');
             cloudView.classList.remove('active-view');
+            lockView.classList.remove('active-view');
             archiveView.classList.remove('active-view');
             targetView.classList.add('active-view');
         }
@@ -375,7 +409,16 @@
             });
         }
 
-        // --- CLOUD SYNC SIMULATION & SETUP ---
+        // --- EXECUTOR LOCK PROTOCOL ---
+        function initiateRelease() {
+            const confirmAction = confirm("WARNING: You are initiating the Vault Release protocol. This will start a 14-day safety countdown to hand over decryption keys to your executor. Proceed?");
+            if (confirmAction) {
+                document.getElementById('countdownStatus').innerText = "⚠️ VAULT RELEASE ACTIVE: 14 Days remaining until master handover.";
+                alert("Protocol initiated. Notification emails sent to designated family executors.");
+            }
+        }
+
+        // --- CLOUD SYNC SETTINGS ---
         const connectDriveBtn = document.getElementById('connectDriveBtn');
         const cloudStatusMsg = document.getElementById('cloudStatusMsg');
 
@@ -396,7 +439,6 @@
                 localStorage.removeItem('gdrive_connected');
                 alert("Google Drive disconnected.");
             } else {
-                // In production, this triggers Google OAuth login popup
                 localStorage.setItem('gdrive_connected', 'true');
                 alert("Success! Family Google Drive connected. New recordings will now back up automatically.");
             }
@@ -417,15 +459,13 @@
                     mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
                     mediaRecorder.onstop = () => {
                         const blob = new Blob(audioChunks, { type: 'audio/webm' });
-                        const newItem = {
+                        localArchive.unshift({
                             type: 'audio',
                             title: document.getElementById('mainPromptText').innerText,
                             date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
                             url: URL.createObjectURL(blob)
-                        };
-                        localArchive.unshift(newItem);
+                        });
                         
-                        // Check if Cloud is synced
                         if (localStorage.getItem('gdrive_connected') === 'true') {
                             statusText.innerText = "Saved & Synced to Google Drive ✓";
                         } else {

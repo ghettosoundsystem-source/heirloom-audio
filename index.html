@@ -1,9 +1,137 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta http-equiv="refresh" content="0; url=elder-studio.html">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heirloom Audio - Preserve Your Family Legacy</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #ffffff;
+            --accent-green: #2ecc71;
+            --accent-blue: #3498db;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            padding-top: 20px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid #333;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .card h3 {
+            color: var(--accent-green);
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .card p {
+            color: #ccc;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        /* Stripe Checkout Button Styling */
+        .cta-btn {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            background-color: var(--accent-green);
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3);
+            margin-top: 20px;
+            transition: background 0.2s;
+        }
+
+        .cta-btn:hover {
+            background-color: #27ae60;
+        }
+
+        .footer-note {
+            margin-top: 30px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
-    <p>Redirecting to Heirloom Audio Studio...</p>
+
+    <div class="container">
+        <h1>Heirloom Audio</h1>
+        <p class="tagline">Capture the voice, stories, and history of your loved ones before they are lost to time.</p>
+
+        <!-- Value Proposition Card -->
+        <div class="card">
+            <h3>Designed for Older Relatives</h3>
+            <p>No passwords to remember, no confusing menus, and no apps to download from an app store. Just a simple, tremor-proof dashboard with massive buttons for voice, video, photos, and nostalgic prompt ideas.</p>
+        </div>
+
+        <div class="card">
+            <h3>Your Private Cloud Vault</h3>
+            <p>We don't hold your family's precious memories hostage on third-party servers. Audio and video files route securely straight into your own family cloud storage.</p>
+        </div>
+
+        <div class="card">
+            <h3>The Executor Lock Failsafe</h3>
+            <p>Equipped with a secure post-mortem handover protocol, ensuring future generations inherit the complete family archive safely.</p>
+        </div>
+
+        <!-- Purchase Action -->
+        <!-- Note: We will link this button to your Stripe payment link later -->
+        <a href="elder-studio.html" class="cta-btn">Get Started (£9.99 / Month)</a>
+        
+        <p style="margin-top: 15px; font-size: 0.9rem;">
+            <a href="elder-studio.html" style="color: var(--accent-blue); text-decoration: none;">Already have a vault? Open Studio App &rarr;</a>
+        </p>
+
+        <div class="footer-note">
+            &copy; 2026 Heirloom Audio. Built for generations.
+        </div>
+    </div>
+
 </body>
 </html>

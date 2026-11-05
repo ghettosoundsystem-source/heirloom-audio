@@ -164,7 +164,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            max-height: 55vh;
+            max-height: 50vh;
             overflow-y: auto;
             padding-right: 5px;
         }
@@ -196,6 +196,23 @@
             font-weight: bold;
             cursor: pointer;
             align-self: flex-start;
+        }
+
+        .custom-input-box {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .custom-input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background-color: #111;
+            color: #fff;
+            font-size: 1rem;
         }
 
         .archive-card-header {
@@ -239,7 +256,7 @@
 
         <div class="dashboard-grid">
             <button class="dash-btn btn-audio" id="goAudioBtn">🎙️ Record Voice Story</button>
-            <button class="dash-btn btn-ideas" id="goIdeasBtn">💡 150+ Memory Ideas & Questions</button>
+            <button class="dash-btn btn-ideas" id="goIdeasBtn">💡 Endless Question Bank & Add New</button>
             <button class="dash-btn btn-photo" id="goPhotoBtn">📸 Take / Upload Photo</button>
             <button class="dash-btn btn-video" id="goVideoBtn">🎥 Record Video Message</button>
             <button class="dash-btn btn-cloud" id="goCloudBtn">☁️ Connect Family Cloud</button>
@@ -275,9 +292,15 @@
 
     <!-- ================= VIEW 4: MEMORY IDEAS LIBRARY ================= -->
     <div id="ideasView" class="view">
-        <h2 style="margin-bottom: 5px;">150+ Memory Questions</h2>
-        <p style="color: #aaa; font-size: 0.95rem; margin-bottom: 15px;">Tap any question below to answer it instantly.</p>
+        <h2 style="margin-bottom: 5px;">Endless Question Bank</h2>
+        <p style="color: #aaa; font-size: 0.95rem; margin-bottom: 15px;">Browse questions or add your own custom family prompt below.</p>
         
+        <!-- Custom Prompt Adder -->
+        <div class="custom-input-box">
+            <input type="text" id="customPromptInput" class="custom-input" placeholder="Type a new custom question...">
+            <button class="answer-idea-btn" id="addCustomBtn" style="background-color: var(--btn-blue);">Add</button>
+        </div>
+
         <div class="ideas-list" id="ideasList"></div>
 
         <button class="back-btn" id="backFromIdeasBtn">Back to Dashboard</button>
@@ -346,8 +369,8 @@
         let videoStream;
         let isRecordingVideo = false;
 
-        // Master 150+ Prompt Library covering childhood, career, romance, wartime, wisdom, and family heritage
-        const promptSuggestions = [
+        // Base 150+ Prompt Library stored in localStorage so custom added questions persist!
+        const defaultPrompts = [
             // Childhood & Early Memories
             "What can you remember about your very first day at school?",
             "What was your family home like when you were a little boy or girl?",
@@ -458,6 +481,9 @@
             "What legacy do you want to leave for your great-grandchildren?"
         ];
 
+        // Load prompts from localStorage or fallback to defaults
+        let promptSuggestions = JSON.parse(localStorage.getItem('heirloom_custom_prompts')) || defaultPrompts;
+
         // View Elements
         const dashboardView = document.getElementById('dashboardView');
         const audioView = document.getElementById('audioView');
@@ -467,10 +493,11 @@
         const lockView = document.getElementById('lockView');
         const archiveView = document.getElementById('archiveView');
 
-        // Set Dynamic Daily Question based on day of year / date so it changes every day!
+        // Endless Dynamic Daily Question (Cycles infinitely using total count)
         function setDailyQuestion() {
             const today = new Date();
             const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+            // Endless loop modulo: even if you reach day 500, it safely cycles through your prompt bank forever!
             const selectedQuestion = promptSuggestions[dayOfYear % promptSuggestions.length];
             
             const options = { weekday: 'long', day: 'numeric', month: 'short' };
@@ -478,7 +505,6 @@
             document.getElementById('mainPromptText').innerText = selectedQuestion;
         }
 
-        // Run on load
         window.onload = function() {
             setDailyQuestion();
         };
@@ -513,6 +539,19 @@
             archiveView.classList.remove('active-view');
             targetView.classList.add('active-view');
         }
+
+        // Add Custom Question functionality
+        document.getElementById('addCustomBtn').addEventListener('click', () => {
+            const inputField = document.getElementById('customPromptInput');
+            const newQ = inputField.value.trim();
+            if (newQ) {
+                promptSuggestions.unshift(newQ); // Add to top of list
+                localStorage.setItem('heirloom_custom_prompts', JSON.stringify(promptSuggestions));
+                inputField.value = "";
+                renderIdeas();
+                alert("New custom question added to your endless bank!");
+            }
+        });
 
         function renderIdeas() {
             const ideasList = document.getElementById('ideasList');
@@ -695,7 +734,7 @@
                 let mediaElement = '';
                 if (item.type === 'audio') mediaElement = `<audio controls src="${item.url}"></audio>`;
                 else if (item.type === 'photo') mediaElement = `<img src="${item.url}" alt="Family Heirloom">`;
-                else if (item.type === 'video') mediaElement => `<video controls src="${item.url}"></video>`;
+                else if (item.type === 'video') mediaElement = `<video controls src="${item.url}"></video>`;
 
                 card.innerHTML = `<div class="archive-card-header">Saved on ${item.date}</div><div class="archive-card-title">"${item.title}"</div>${mediaElement}`;
                 archiveList.appendChild(card);

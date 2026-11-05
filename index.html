@@ -12,6 +12,7 @@
             --accent-green: #2ecc71;
             --accent-blue: #3498db;
             --border-color: #333;
+            --error-red: #e74c3c;
         }
 
         * {
@@ -138,6 +139,8 @@
             text-align: center;
             box-shadow: 0 6px 15px rgba(46, 204, 113, 0.3);
             transition: background 0.2s;
+            border: none;
+            cursor: pointer;
         }
 
         .cta-btn.secondary {
@@ -147,6 +150,43 @@
 
         .cta-btn:hover {
             opacity: 0.9;
+        }
+
+        /* Vault Login Modal / Section */
+        .login-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 16px;
+            margin-top: 25px;
+            text-align: left;
+        }
+
+        .login-box h3 {
+            color: var(--accent-blue);
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .vault-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background-color: #111;
+            color: #fff;
+            font-size: 1rem;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .error-msg {
+            color: var(--error-red);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
         }
 
         .footer-note {
@@ -183,7 +223,8 @@
                 <div class="price-title">Starter Memory Pass</div>
                 <div class="price-amount">£4.99 <span style="font-size:1rem; color:#aaa">one-off</span></div>
                 <div class="price-desc">28 days of full studio access. Perfect for capturing a holiday visit, birthday, or weekend family gathering.</div>
-                <a href="elder-studio.html" class="cta-btn secondary">Get Starter Pass</a>
+                <!-- Later we link this to Stripe checkout -->
+                <button class="cta-btn secondary" onclick="simulatePurchase('Starter Pass')">Get Starter Pass</button>
             </div>
             
             <!-- Lifetime Eternal Vault (Featured) -->
@@ -192,7 +233,7 @@
                 <div class="price-title">The Eternal Vault (Lifetime Access)</div>
                 <div class="price-amount">£179.99</div>
                 <div class="price-desc">One-time payment. Forever access, unlimited voice/video stories, prompt library, and the Executor Lock post-mortem security system.</div>
-                <a href="elder-studio.html" class="cta-btn">Get Lifetime Access</a>
+                <button class="cta-btn" onclick="simulatePurchase('Eternal Vault')">Get Lifetime Access</button>
             </div>
 
             <!-- Annual Plan -->
@@ -200,19 +241,50 @@
                 <div class="price-title">Annual Family Circle</div>
                 <div class="price-amount">£39.99 <span style="font-size:1rem; color:#aaa">/ year</span></div>
                 <div class="price-desc">Full studio access billed annually. Perfect for ongoing yearly memory collecting.</div>
-                <a href="elder-studio.html" class="cta-btn secondary">Choose Annual</a>
+                <button class="cta-btn secondary" onclick="simulatePurchase('Annual Circle')">Choose Annual</button>
             </div>
 
         </div>
 
-        <p style="margin-top: 20px; font-size: 0.9rem;">
-            <a href="elder-studio.html" style="color: var(--accent-blue); text-decoration: none;">Already have a vault? Open Studio App &rarr;</a>
-        </p>
+        <!-- Vault Access Gate -->
+        <div class="login-box">
+            <h3>Already Have a Vault Passcode?</h3>
+            <p>Enter your family access key to unlock the recording studio on this device.</p>
+            <input type="text" id="passcodeInput" class="vault-input" placeholder="e.g. HEIRLOOM2026">
+            <button class="cta-btn" style="background-color: var(--accent-blue);" onclick="unlockVault()">Open Studio Vault</button>
+            <div id="errorMsg" class="error-msg">Invalid passcode. Please check your purchase email.</div>
+        </div>
 
         <div class="footer-note">
             &copy; 2026 Heirloom Audio. Built for generations.
         </div>
     </div>
 
+    <script>
+        // Check if device was already unlocked previously
+        window.onload = function() {
+            if (localStorage.getItem('heirloom_unlocked') === 'true') {
+                // If already unlocked, show a quick notice or let them jump straight in
+                document.querySelector('.login-box h3').innerText = "Vault Unlocked on this Device ✓";
+            }
+        }
+
+        function unlockVault() {
+            const inputCode = document.getElementById('passcodeInput').value.trim();
+            const errorMsg = document.getElementById('errorMsg');
+
+            // For testing, our master passcode is HEIRLOOM2026
+            if (inputCode === "HEIRLOOM2026" || inputCode === "ADMIN") {
+                localStorage.setItem('heirloom_unlocked', 'true');
+                window.location.href = "elder-studio.html";
+            } else {
+                errorMsg.style.display = "block";
+            }
+        }
+
+        function simulatePurchase(planName) {
+            alert("Stripe Checkout simulation for: " + planName + "\n\nIn production, this redirects to Stripe. For now, use passcode: HEIRLOOM2026 to log in below!");
+        }
+    </script>
 </body>
 </html>

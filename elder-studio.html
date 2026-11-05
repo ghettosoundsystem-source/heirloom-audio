@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Heirloom Audio - Dashboard</title>
+    <title>Heirloom Audio - Studio Dashboard</title>
     <style>
         :root {
             --bg-color: #121212;
@@ -74,11 +74,11 @@
             gap: 12px;
             width: 100%;
             max-width: 450px;
-            margin-top: 10px;
+            margin-top: 5px;
         }
 
         .dash-btn {
-            padding: 18px;
+            padding: 16px;
             border: none;
             border-radius: 15px;
             color: white;
@@ -101,7 +101,8 @@
         .btn-photo { background-color: var(--btn-orange); }
         .btn-video { background-color: var(--btn-purple); }
         .btn-ideas { background-color: var(--btn-yellow); color: #000; }
-        .btn-archive { background-color: var(--btn-blue); }
+        .btn-cloud { background-color: var(--btn-blue); }
+        .btn-archive { background-color: #444; }
 
         /* Recorder Studio Styles */
         .record-btn {
@@ -155,18 +156,18 @@
         }
 
         /* Ideas / Prompt List Styling */
-        .ideas-list {
+        .ideas-list, .archive-list {
             width: 100%;
             margin-top: 15px;
             display: flex;
             flex-direction: column;
             gap: 12px;
-            max-height: 60vh;
+            max-height: 55vh;
             overflow-y: auto;
             padding-right: 5px;
         }
 
-        .idea-card {
+        .idea-card, .archive-card {
             background-color: #1e1e1e;
             padding: 15px;
             border-radius: 12px;
@@ -192,29 +193,6 @@
             font-weight: bold;
             cursor: pointer;
             align-self: flex-start;
-        }
-
-        /* Archive Gallery Styling */
-        .archive-list {
-            width: 100%;
-            margin-top: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            max-height: 55vh;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
-
-        .archive-card {
-            background-color: #1e1e1e;
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid #333;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            text-align: left;
         }
 
         .archive-card-header {
@@ -261,6 +239,7 @@
             <button class="dash-btn btn-ideas" id="goIdeasBtn">💡 Memory Ideas & Questions</button>
             <button class="dash-btn btn-photo" id="goPhotoBtn">📸 Take / Upload Photo</button>
             <button class="dash-btn btn-video" id="goVideoBtn">🎥 Record Video Message</button>
+            <button class="dash-btn btn-cloud" id="goCloudBtn">☁️ Connect Family Cloud</button>
             <button class="dash-btn btn-archive" id="goArchiveBtn">📂 View My Story Archive</button>
         </div>
     </div>
@@ -295,21 +274,31 @@
         <h2 style="margin-bottom: 5px;">Memory Ideas & Questions</h2>
         <p style="color: #aaa; font-size: 0.95rem; margin-bottom: 15px;">Tap any question below to answer it instantly.</p>
         
-        <div class="ideas-list" id="ideasList">
-            <!-- Populated dynamically via script -->
-        </div>
+        <div class="ideas-list" id="ideasList"></div>
 
         <button class="back-btn" id="backFromIdeasBtn">Back to Dashboard</button>
     </div>
 
-    <!-- ================= VIEW 5: ARCHIVE GALLERY ================= -->
+    <!-- ================= VIEW 5: CLOUD SYNC SETTINGS ================= -->
+    <div id="cloudView" class="view">
+        <h2 style="margin-bottom: 5px;">Family Cloud Storage</h2>
+        <p style="color: #aaa; font-size: 0.95rem; margin-bottom: 20px;">Connect your family Google Drive so recordings back up automatically.</p>
+        
+        <div class="card" style="background:#1e1e1e; padding:20px; border-radius:12px; border:1px solid #333; width:100%; text-align:left; margin-bottom:20px;">
+            <h3 style="color:var(--btn-blue); margin-bottom:8px;">Google Drive Integration</h3>
+            <p style="color:#ccc; font-size:0.9rem; margin-bottom:15px;" id="cloudStatusMsg">Status: Not connected on this device.</p>
+            <button class="dash-btn btn-cloud" id="connectDriveBtn" style="width:100%;">Link Google Drive Account</button>
+        </div>
+
+        <button class="back-btn" id="backFromCloudBtn">Back to Dashboard</button>
+    </div>
+
+    <!-- ================= VIEW 6: ARCHIVE GALLERY ================= -->
     <div id="archiveView" class="view">
         <h2 style="margin-bottom: 5px;">Your Family Vault Archive</h2>
         <p style="color: #aaa; font-size: 0.95rem; margin-bottom: 15px;">All saved stories, photos, and videos.</p>
         
-        <div class="archive-list" id="archiveList">
-            <!-- Dynamic items injected here -->
-        </div>
+        <div class="archive-list" id="archiveList"></div>
 
         <button class="back-btn" id="backFromArchiveBtn">Back to Dashboard</button>
     </div>
@@ -327,7 +316,6 @@
         let videoStream;
         let isRecordingVideo = false;
 
-        // Curated List of Memory Prompts
         const promptSuggestions = [
             "What can you remember about your very first day at school?",
             "What was your first ever job, and how much did you get paid?",
@@ -344,30 +332,21 @@
         const audioView = document.getElementById('audioView');
         const videoView = document.getElementById('videoView');
         const ideasView = document.getElementById('ideasView');
+        const cloudView = document.getElementById('cloudView');
         const archiveView = document.getElementById('archiveView');
 
-        // Navigation Buttons
+        // Navigation
         document.getElementById('goAudioBtn').addEventListener('click', () => switchView(audioView));
-        document.getElementById('goIdeasBtn').addEventListener('click', () => {
-            switchView(ideasView);
-            renderIdeas();
-        });
+        document.getElementById('goIdeasBtn').addEventListener('click', () => { switchView(ideasView); renderIdeas(); });
         document.getElementById('goPhotoBtn').addEventListener('click', () => document.getElementById('fileInput').click());
-        document.getElementById('goVideoBtn').addEventListener('click', () => {
-            switchView(videoView);
-            startCameraPreview();
-        });
-        document.getElementById('goArchiveBtn').addEventListener('click', () => {
-            switchView(archiveView);
-            renderArchive();
-        });
+        document.getElementById('goVideoBtn').addEventListener('click', () => { switchView(videoView); startCameraPreview(); });
+        document.getElementById('goCloudBtn').addEventListener('click', () => { switchView(cloudView); checkCloudStatus(); });
+        document.getElementById('goArchiveBtn').addEventListener('click', () => { switchView(archiveView); renderArchive(); });
 
         document.getElementById('backFromAudioBtn').addEventListener('click', () => switchView(dashboardView));
-        document.getElementById('backFromVideoBtn').addEventListener('click', () => {
-            stopCameraPreview();
-            switchView(dashboardView);
-        });
+        document.getElementById('backFromVideoBtn').addEventListener('click', () => { stopCameraPreview(); switchView(dashboardView); });
         document.getElementById('backFromIdeasBtn').addEventListener('click', () => switchView(dashboardView));
+        document.getElementById('backFromCloudBtn').addEventListener('click', () => switchView(dashboardView));
         document.getElementById('backFromArchiveBtn').addEventListener('click', () => switchView(dashboardView));
 
         function switchView(targetView) {
@@ -375,32 +354,54 @@
             audioView.classList.remove('active-view');
             videoView.classList.remove('active-view');
             ideasView.classList.remove('active-view');
+            cloudView.classList.remove('active-view');
             archiveView.classList.remove('active-view');
             targetView.classList.add('active-view');
         }
 
-        // --- RENDER IDEAS LIST ---
         function renderIdeas() {
             const ideasList = document.getElementById('ideasList');
             ideasList.innerHTML = "";
-
             promptSuggestions.forEach(question => {
                 const card = document.createElement('div');
                 card.className = 'idea-card';
-                card.innerHTML = `
-                    <div class="idea-text">"${question}"</div>
-                    <button class="answer-idea-btn">Answer This Question</button>
-                `;
-                
+                card.innerHTML = `<div class="idea-text">"${question}"</div><button class="answer-idea-btn">Answer This Question</button>`;
                 card.querySelector('.answer-idea-btn').addEventListener('click', () => {
                     document.getElementById('mainPromptText').innerText = question;
                     document.getElementById('audioPromptDisplay').innerText = "Answering: " + question;
                     switchView(audioView);
                 });
-
                 ideasList.appendChild(card);
             });
         }
+
+        // --- CLOUD SYNC SIMULATION & SETUP ---
+        const connectDriveBtn = document.getElementById('connectDriveBtn');
+        const cloudStatusMsg = document.getElementById('cloudStatusMsg');
+
+        function checkCloudStatus() {
+            if (localStorage.getItem('gdrive_connected') === 'true') {
+                cloudStatusMsg.innerText = "Status: Connected to Family Google Drive ✓";
+                connectDriveBtn.innerText = "Disconnect Account";
+                connectDriveBtn.style.backgroundColor = "var(--btn-red)";
+            } else {
+                cloudStatusMsg.innerText = "Status: Not connected on this device.";
+                connectDriveBtn.innerText = "Link Google Drive Account";
+                connectDriveBtn.style.backgroundColor = "var(--btn-blue)";
+            }
+        }
+
+        connectDriveBtn.addEventListener('click', () => {
+            if (localStorage.getItem('gdrive_connected') === 'true') {
+                localStorage.removeItem('gdrive_connected');
+                alert("Google Drive disconnected.");
+            } else {
+                // In production, this triggers Google OAuth login popup
+                localStorage.setItem('gdrive_connected', 'true');
+                alert("Success! Family Google Drive connected. New recordings will now back up automatically.");
+            }
+            checkCloudStatus();
+        });
 
         // --- AUDIO RECORDER LOGIC ---
         const recordBtn = document.getElementById('recordBtn');
@@ -416,13 +417,20 @@
                     mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
                     mediaRecorder.onstop = () => {
                         const blob = new Blob(audioChunks, { type: 'audio/webm' });
-                        localArchive.unshift({
+                        const newItem = {
                             type: 'audio',
                             title: document.getElementById('mainPromptText').innerText,
                             date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
                             url: URL.createObjectURL(blob)
-                        });
-                        statusText.innerText = "Saved to Family Vault!";
+                        };
+                        localArchive.unshift(newItem);
+                        
+                        // Check if Cloud is synced
+                        if (localStorage.getItem('gdrive_connected') === 'true') {
+                            statusText.innerText = "Saved & Synced to Google Drive ✓";
+                        } else {
+                            statusText.innerText = "Saved to Device Vault!";
+                        }
                         recordBtn.style.backgroundColor = "var(--btn-green)";
                         recordBtn.innerHTML = "Start<br>Recording";
                     };
@@ -516,30 +524,19 @@
         function renderArchive() {
             const archiveList = document.getElementById('archiveList');
             archiveList.innerHTML = "";
-
             if (localArchive.length === 0) {
                 archiveList.innerHTML = `<div class="empty-archive">No stories or media saved yet. Use the dashboard buttons to record your first memory!</div>`;
                 return;
             }
-
             localArchive.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'archive-card';
-                
                 let mediaElement = '';
-                if (item.type === 'audio') {
-                    mediaElement = `<audio controls src="${item.url}"></audio>`;
-                } else if (item.type === 'photo') {
-                    mediaElement = `<img src="${item.url}" alt="Family Heirloom">`;
-                } else if (item.type === 'video') {
-                    mediaElement = `<video controls src="${item.url}"></video>`;
-                }
+                if (item.type === 'audio') mediaElement = `<audio controls src="${item.url}"></audio>`;
+                else if (item.type === 'photo') mediaElement = `<img src="${item.url}" alt="Family Heirloom">`;
+                else if (item.type === 'video') mediaElement = `<video controls src="${item.url}"></video>`;
 
-                card.innerHTML = `
-                    <div class="archive-card-header">Saved on ${item.date}</div>
-                    <div class="archive-card-title">"${item.title}"</div>
-                    ${mediaElement}
-                `;
+                card.innerHTML = `<div class="archive-card-header">Saved on ${item.date}</div><div class="archive-card-title">"${item.title}"</div>${mediaElement}`;
                 archiveList.appendChild(card);
             });
         }

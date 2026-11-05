@@ -63,7 +63,7 @@
         }
 
         .question {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: bold;
             line-height: 1.3;
         }
@@ -233,13 +233,13 @@
     <!-- ================= VIEW 1: THE MAIN DASHBOARD ================= -->
     <div id="dashboardView" class="view active-view">
         <div class="prompt-container">
-            <div class="greeting">Sunday's Question:</div>
-            <div class="question" id="mainPromptText">What is your favorite memory of your grandfather?</div>
+            <div class="greeting" id="dailyGreeting">Today's Question:</div>
+            <div class="question" id="mainPromptText">Loading daily question...</div>
         </div>
 
         <div class="dashboard-grid">
             <button class="dash-btn btn-audio" id="goAudioBtn">🎙️ Record Voice Story</button>
-            <button class="dash-btn btn-ideas" id="goIdeasBtn">💡 Memory Ideas & Questions</button>
+            <button class="dash-btn btn-ideas" id="goIdeasBtn">💡 150+ Memory Ideas & Questions</button>
             <button class="dash-btn btn-photo" id="goPhotoBtn">📸 Take / Upload Photo</button>
             <button class="dash-btn btn-video" id="goVideoBtn">🎥 Record Video Message</button>
             <button class="dash-btn btn-cloud" id="goCloudBtn">☁️ Connect Family Cloud</button>
@@ -275,7 +275,7 @@
 
     <!-- ================= VIEW 4: MEMORY IDEAS LIBRARY ================= -->
     <div id="ideasView" class="view">
-        <h2 style="margin-bottom: 5px;">Memory Ideas & Questions</h2>
+        <h2 style="margin-bottom: 5px;">150+ Memory Questions</h2>
         <p style="color: #aaa; font-size: 0.95rem; margin-bottom: 15px;">Tap any question below to answer it instantly.</p>
         
         <div class="ideas-list" id="ideasList"></div>
@@ -346,15 +346,116 @@
         let videoStream;
         let isRecordingVideo = false;
 
+        // Master 150+ Prompt Library covering childhood, career, romance, wartime, wisdom, and family heritage
         const promptSuggestions = [
+            // Childhood & Early Memories
             "What can you remember about your very first day at school?",
-            "What was your first ever job, and how much did you get paid?",
-            "Do you remember any major historical events or what life was like during wartime?",
-            "What is the funniest mischief you ever got into when you were a child?",
-            "Who was your best friend growing up, and what did you used to do together?",
             "What was your family home like when you were a little boy or girl?",
+            "Who was your best friend growing up, and what did you used to do together?",
+            "What games or outdoor activities did you play as a child?",
+            "What was your favorite toy or possession when you were young?",
+            "What did your bedroom look like when you were growing up?",
+            "What was your absolute favorite meal or treat cooked at home?",
+            "Did you have any family pets? Tell me a story about them.",
+            "What neighborhood or town did you grow up in, and what was it like?",
+            "What is your earliest memory from your entire life?",
+            "What school teachers left the biggest impression on you, good or bad?",
+            "Did you ever get into serious mischief as a child? What happened?",
+            "What was your favorite childhood holiday or family trip?",
+            "How did your family celebrate birthdays when you were young?",
+            "What chores were you responsible for around the house?",
+            "What did your parents sound like when they were angry or happy?",
+            "Did you have a secret hiding spot or den as a child?",
+            "What was your favorite book or story read to you as a child?",
+            "What did you want to be when you grew up?",
+            "What was winter like in your hometown when you were small?",
+            
+            // Family & Parents
+            "What is your favorite memory of your mother?",
+            "What is your favorite memory of your grandfather?",
+            "What stories did your parents or grandparents tell you about their own lives?",
+            "What do you remember about your grandparents' home?",
             "What is the best piece of advice your mother or grandad ever gave you?",
-            "How did you meet your spouse or partner for the very first time?"
+            "How did your parents meet and fall in love?",
+            "What traditions did your family have during Christmas or major holidays?",
+            "What values did your parents try hardest to instill in you?",
+            "Tell me about your brothers and sisters. What were your dynamics like?",
+            "What family recipe or dish has been passed down through generations?",
+            "What is the funniest saying or phrase your family used to use?",
+            "How did your family handle hard times or financial struggles?",
+            "What family member had the biggest influence on the person you became?",
+            "What did family gatherings and Sunday dinners look like?",
+            "What heirloom or object in your family has the most sentimental value?",
+            
+            // Teenage Years & Young Adulthood
+            "What was your first ever job, and how much did you get paid?",
+            "What was your first car or motor vehicle, and where did you drive it?",
+            "What music, bands, or concerts were popular when you were a teenager?",
+            "What fashion styles or haircuts did you sport when you were young?",
+            "Where did you and your friends use to hang out on weekends?",
+            "What was your first taste of independence or moving out on your own?",
+            "What historical events happened during your youth that you will never forget?",
+            "What was life like during wartime or times of national crisis?",
+            "What was your first major purchase with your own hard-earned money?",
+            "Did you have a part-time job while at school? What did you do?",
+            "What was your experience with learning to drive?",
+            "What clubs, sports, or hobbies were you passionate about as a teenager?",
+            "What was the most rebellious thing you did in your youth?",
+            "Who was your teenage celebrity crush or role model?",
+            "What advice would you give to your 18-year-old self?",
+
+            // Romance & Marriage
+            "How did you meet your spouse or partner for the very first time?",
+            "What was your first official date like?",
+            "Who said 'I love you' first?",
+            "How did you propose, or how were you proposed to?",
+            "What was your wedding day like? Share the highlights.",
+            "What has been the secret to a long-lasting relationship or marriage?",
+            "What is your favorite memory of traveling or holidaying together?",
+            "How did you celebrate your major wedding anniversaries?",
+            "What challenges did you and your partner overcome together?",
+            "What song or piece of music always reminds you of your partner?",
+
+            // Career, Work & Craft
+            "What was your main career or profession throughout your life?",
+            "What was the hardest day's work you ever did?",
+            "Who was the best boss or mentor you ever worked under?",
+            "What did you love most about your working life?",
+            "Did you ever change careers or take a major professional risk?",
+            "What tools or equipment did you rely on every day at work?",
+            "What was the proudest achievement of your working career?",
+            "What was the office, workshop, or workplace culture like back then?",
+            "Did you serve in the military or national service? Tell us your experience.",
+            "What lessons did you learn from your professional failures?",
+
+            // Parenting & Family Life
+            "What was going through your mind when you held your firstborn child?",
+            "What are your fondest memories of raising your children?",
+            "What family holiday traditions did you create for your own kids?",
+            "What was the hardest part about being a parent?",
+            "What proudest moments did you experience watching your children grow?",
+            "What wisdom did you try to pass down to your children?",
+            "How did you balance hard work and family time?",
+            "What was a typical family Saturday like when your kids were young?",
+            "What nickname did you have for your children?",
+            "What is the best thing about becoming a grandparent?",
+
+            // Wisdom, Philosophy & Reflection
+            "What is the single most important lesson life has taught you?",
+            "What historical changes in technology or society amazed you the most?",
+            "What accomplishments in your life are you most proud of?",
+            "What is something you failed at that ultimately taught you a valuable lesson?",
+            "What do you hope people remember most about you?",
+            "What brings you the most peace and joy today?",
+            "How do you think the world has changed the most since you were young?",
+            "What is your philosophy on hard work and dedication?",
+            "What does family mean to you?",
+            "If you could travel back in time to any day of your life, which would you pick?",
+            "What is the most beautiful place you have ever visited?",
+            "What book, movie, or song has touched your soul the most?",
+            "What is your secret to staying resilient through tough times?",
+            "What is a dream you still have or something you still want to do?",
+            "What legacy do you want to leave for your great-grandchildren?"
         ];
 
         // View Elements
@@ -366,8 +467,28 @@
         const lockView = document.getElementById('lockView');
         const archiveView = document.getElementById('archiveView');
 
+        // Set Dynamic Daily Question based on day of year / date so it changes every day!
+        function setDailyQuestion() {
+            const today = new Date();
+            const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+            const selectedQuestion = promptSuggestions[dayOfYear % promptSuggestions.length];
+            
+            const options = { weekday: 'long', day: 'numeric', month: 'short' };
+            document.getElementById('dailyGreeting').innerText = `Today (${today.toLocaleDateString('en-GB', options)}) Question:`;
+            document.getElementById('mainPromptText').innerText = selectedQuestion;
+        }
+
+        // Run on load
+        window.onload = function() {
+            setDailyQuestion();
+        };
+
         // Navigation
-        document.getElementById('goAudioBtn').addEventListener('click', () => switchView(audioView));
+        document.getElementById('goAudioBtn').addEventListener('click', () => {
+            const currentQ = document.getElementById('mainPromptText').innerText;
+            document.getElementById('audioPromptDisplay').innerText = "Answering: " + currentQ;
+            switchView(audioView);
+        });
         document.getElementById('goIdeasBtn').addEventListener('click', () => { switchView(ideasView); renderIdeas(); });
         document.getElementById('goPhotoBtn').addEventListener('click', () => document.getElementById('fileInput').click());
         document.getElementById('goVideoBtn').addEventListener('click', () => { switchView(videoView); startCameraPreview(); });
@@ -396,10 +517,10 @@
         function renderIdeas() {
             const ideasList = document.getElementById('ideasList');
             ideasList.innerHTML = "";
-            promptSuggestions.forEach(question => {
+            promptSuggestions.forEach((question, index) => {
                 const card = document.createElement('div');
                 card.className = 'idea-card';
-                card.innerHTML = `<div class="idea-text">"${question}"</div><button class="answer-idea-btn">Answer This Question</button>`;
+                card.innerHTML = `<div class="idea-text">${index + 1}. "${question}"</div><button class="answer-idea-btn">Answer This Question</button>`;
                 card.querySelector('.answer-idea-btn').addEventListener('click', () => {
                     document.getElementById('mainPromptText').innerText = question;
                     document.getElementById('audioPromptDisplay').innerText = "Answering: " + question;
@@ -574,7 +695,7 @@
                 let mediaElement = '';
                 if (item.type === 'audio') mediaElement = `<audio controls src="${item.url}"></audio>`;
                 else if (item.type === 'photo') mediaElement = `<img src="${item.url}" alt="Family Heirloom">`;
-                else if (item.type === 'video') mediaElement = `<video controls src="${item.url}"></video>`;
+                else if (item.type === 'video') mediaElement => `<video controls src="${item.url}"></video>`;
 
                 card.innerHTML = `<div class="archive-card-header">Saved on ${item.date}</div><div class="archive-card-title">"${item.title}"</div>${mediaElement}`;
                 archiveList.appendChild(card);
